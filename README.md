@@ -16,3 +16,10 @@ Official Github repo for the paper "A Novel Contrastive Loss for Zero-Day Networ
 ## t-SNE Visualisation
 
 ## Reference
+```
+@Article{wilkie2025clad,
+    title   = {A Novel Contrastive Loss for Zero-Day Network Intrusion Detection},
+    author  = {Jack Wilkie and Hanan Hindy and Christos Tachtatzis and James Irvine and Robert Atkinson},
+    year    = {2025},
+}
+```
