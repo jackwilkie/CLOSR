@@ -15,6 +15,16 @@ Official Github repo for the paper "A Novel Contrastive Loss for Zero-Day Networ
 
 ## t-SNE Visualisation
 
+**(1) Standard Contrastive Loss*
+<p align="center">
+  <img src="images/contrastive_tsne.png" width="400">
+</p>
+
+**(2) CLAD Loss**
+<p align="center">
+  <img src="images/clad_tsne.png" width="400">
+</p>
+
 ## Reference
 ```
 @Article{wilkie2025clad,
