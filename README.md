@@ -15,7 +15,7 @@ Official Github repo for the paper "A Novel Contrastive Loss for Zero-Day Networ
 
 ## t-SNE Visualisation
 
-**(1) Standard Contrastive Loss*
+**(1) Standard Contrastive Loss**
 <p align="center">
   <img src="images/contrastive_tsne.png" width="400">
 </p>
