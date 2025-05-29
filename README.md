@@ -33,6 +33,7 @@ CLAD significantly outperforms both anomaly detectors on :
 
 CLOSR significantly imrpoces open set recognition performance at a slight cost to closed set classificaiton performance:
 
+<div align="center">
 | Model           | Closed Set Acc | Open Set AUC | OpenAUC          |
 |------------------|----------------|---------------|------------------|
 | CLOSR            | 0.994577       | 0.978625      | **0.973319**     |
@@ -41,7 +42,7 @@ CLOSR significantly imrpoces open set recognition performance at a slight cost t
 | OPENMAX          | 0.995699       | 0.705962      | 0.702926         |
 | CRSOR            | 0.995115       | 0.748929      | 0.745270         |
 | Siamese Network  | 0.997649       | 0.723319      | 0.721618         |
-
+</div>
 
 ## Running 
 
