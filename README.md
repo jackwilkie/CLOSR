@@ -10,7 +10,7 @@ Official Github repo for the paper "A Novel Contrastive Loss for Zero-Day Networ
 ## CLOSR
 
 ## Comparison
-CLAD significantly outperforms both anomaly detectors on :
+CLAD significantly outperforms both closed-set classifiers on known attack detection (top) and anomaly detectors on zero-day attack detection (bottom):
 
 | Class                    | CLAD     | DUAD     | DAE-LR   | Deep SVDD | AE       | SVM      | AutoSVM  | IF       | RENOIR   | MLP      | Siamese  |
 |--------------------------|----------|----------|----------|-----------|----------|----------|----------|----------|----------|----------|----------|
@@ -31,7 +31,7 @@ CLAD significantly outperforms both anomaly detectors on :
 | **Open Set Mean**        | **0.989263** | 0.904992 | 0.924157 | 0.871632  | 0.860319 | 0.869277 | 0.870198 | 0.876045 | 0.644643 | 0.513579 | 0.853102 |
 
 
-CLOSR significantly imrpoces open set recognition performance at a slight cost to closed set classificaiton performance:
+CLOSR significantly improves open set recognition performance at a slight cost to closed set classificaiton performance when compared to baseline models:
 
 | Model           | Closed Set Acc | Open Set AUC | OpenAUC          |
 |------------------|----------------|---------------|------------------|
@@ -43,6 +43,8 @@ CLOSR significantly imrpoces open set recognition performance at a slight cost t
 | Siamese Network  | 0.997649       | 0.723319      | 0.721618         |
 
 ## Running 
+
+### 1. Download dataset
 
 ## t-SNE Visualisation
 
