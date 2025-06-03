@@ -3,11 +3,53 @@
   <img src="images/architecture.png" width="700">
 </p>
 
-Official Github repo for the paper "A Novel Contrastive Loss for Zero-Day Network Intrusion Detection". This repository covers a reference implementation and scripts to reproduce experimental results for both the Contrastive Learning for Anomaly Detection (CLAD) and Contrastive Learning for Open Set Recognition (CLOSR) methods decribed in [this work](www.google.com).
+Official Github repo for the paper "A Novel Contrastive Loss for Zero-Day Network Intrusion Detection". This repository covers a reference implementation for both the Contrastive Learning for Anomaly Detection (CLAD) and Contrastive Learning for Open Set Recognition (CLOSR) methods decribed in [this work](www.google.com).
 
 ## CLAD
 
+The CLAD loss function models benign traffic as a vMF distribution in embedded space. The loss function [`CLADLoss`](https://github.com/jackwilkie/CLOSR/blob/main/losses/clad_loss.py#L75) in `losses/clad_loss.py` takes `x` (L2 normalised features) and `y` (labels) as inputs, and returns the loss.
+
+Usage:
+
+```python
+from losses.clad_loss import CLADLoss
+
+# define CLAD loss with a margin `m`
+criterion = CLADLoss(m = m)
+
+# features: [bsz, f_dim]
+# features should L2 normalized in f_dim dimension
+features = ...
+# labels: [bsz]
+labels = ...
+
+# calculate loss
+loss = criterion(x = features, y = labels)
+...
+```
+
+
 ## CLOSR
+
+The CLOSR loss function models each class as a vMF distribution a distinct embedded space. The loss function [`CLSORLoss`](https://github.com/jackwilkie/CLOSR/blob/main/losses/closr_loss.py#L52) in `losses/closr_loss.py` takes `x` (L2 normalised features for each class) and `y` (labels) as inputs, and returns the loss.
+
+```python
+from losses.closr_loss import CLOSRLoss
+
+# define CLOSR loss with a margin `m` and 'n_classes' classes
+criterion = CLADLoss(m = m, n_classes = n_classes)
+
+# features: [bsz, n_classes, f_dim]
+# features should L2 normalized in f_dim dimension
+features = ...
+# labels: [bsz]
+labels = ...
+
+# calculate loss
+loss = criterion(x = features, y =labels)
+...
+```
+
 
 ## Comparison
 CLAD significantly outperforms both closed-set classifiers on known attack detection (top) and anomaly detectors on zero-day attack detection (bottom):
@@ -44,11 +86,60 @@ CLOSR significantly improves open set recognition performance at a slight cost t
 
 ## Running 
 
-### 1. Download dataset
+### (1) Install Requirements
+
+This repository requires python3 and Pytorch. To install the required dependencies run:
+
+```
+pip install -r requirements.txt
+```
+
+### (2) Download Dataset
+
+Models and baselines are trained and evaluated on the **Lycos2017** dataset.
+
+You can either:
+- Download the original CSV files from [here](https://lycos-ids.univ-lemans.fr), combine them into a single file, and name it `lycos.csv`,  
+**or**
+- Download a preprocessed version directly from [here](https://drive.google.com/file/d/1PUMAbjz5L0MKiL3P-bEFTYYOcB6zPYB2/view?usp=share_link).
+
+Once downloaded, move the file to: `./data/lycos.csv`.
+
+### (3) Train Models
+
+CLAD can be trained using the [train_clad.py](./train_clad.py) script:
+
+```
+python3 train_clad.py
+```
+
+CLOSR can be trained using the [train_closr.py](./train_closr.py) script:
+
+```
+python3 train_closr.py
+```
+
+Both scripts will train the model and save the weights to `./weights/clad.pt.tar` and `./weights/closr.pt.tar` for CLAD and CLOSR, respectively.
+
+### (4) Evaluate Models
+
+CLAD can be evaluated by running [eval_clad.py](./eval_clad.py):
+
+```
+python3 eval_clad.py
+```
+
+CLOSR can be evaluated by running [eval_closr.py](./eval_closr.py):
+
+```
+python3 eval_closr.py
+```
+
+The performance metrics of each model will be printed to the terminal after evaluation.
 
 ## t-SNE Visualisation
 
-**(1) Standard Contrastive Loss**
+**(1) Contrastive Loss**
 <p align="center">
   <img src="images/contrastive_tsne.png" width="400">
 </p>
@@ -62,7 +153,7 @@ CLOSR significantly improves open set recognition performance at a slight cost t
 ```
 @Article{wilkie2025clad,
     title   = {A Novel Contrastive Loss for Zero-Day Network Intrusion Detection},
-    author  = {Jack Wilkie and Hanan Hindy and Christos Tachtatzis and James Irvine and Robert Atkinson},
+    author  = {Jack Wilkie and Hanan Hindy and Craig Michie and Christos Tachtatzis and James Irvine and Robert Atkinson},
     year    = {2025},
 }
 ```

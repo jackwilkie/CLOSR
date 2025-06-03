@@ -6,7 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 from typing import Optional, Callable, Union, Tuple
-from .utils import cosdist, TripletLossWrapper
+from util.distance import cosdist
 
 # -- loss function
 def clad_calc(
@@ -72,7 +72,7 @@ def clad_loss(
     )
     
 
-class ContrastiveAnomaly(nn.Module):
+class CLADLoss(nn.Module):
     def __init__(
         self, 
         m: float = 1.,
@@ -110,6 +110,3 @@ class ContrastiveAnomaly(nn.Module):
     
     def get_fraction_pos(self):
         return self.fraction_positive_pairs
-    
-def anomaly_contrastive_loss(*args, **kwargs):
-    return TripletLossWrapper(ContrastiveAnomaly, *args, **kwargs)

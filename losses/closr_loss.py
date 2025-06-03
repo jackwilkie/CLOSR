@@ -5,8 +5,8 @@ import torch as T
 from torch import Tensor
 from typing import Union, Tuple, Optional, Callable
 
-from .clad_loss import contrastive_anomaly, clad_calc
-from .utils import TripletLossWrapper, batched_cosdist
+from .clad_loss import CLADLoss, clad_calc
+from util.distance import batched_cosdist
 
 def closr_loss(
     x: Tensor,
@@ -49,7 +49,7 @@ def closr_loss(
         return loss
 
     
-class CLOSRLoss(contrastive_anomaly.ContrastiveAnomaly):
+class CLOSRLoss(CLADLoss):
     def __init__(
         self, 
         *args,
@@ -79,6 +79,3 @@ class CLOSRLoss(contrastive_anomaly.ContrastiveAnomaly):
         
         self.fraction_positive_pairs = frac_pos
         return loss
-
-def closr_loss(*args, **kwargs) -> TripletLossWrapper:
-    return TripletLossWrapper(CLOSRLoss, *args, **kwargs)
