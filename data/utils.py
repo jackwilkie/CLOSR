@@ -6,9 +6,7 @@ Created on: 24/10/24
 
 import numpy as np
 from numpy import ndarray
-from typing import Tuple
-from typing import Optional
-from typing import Union
+from typing import Tuple, Optional, Union
 
 # -- z-normalisation
 def calc_stats(x: ndarray, bessels_correction: bool = True) -> Tuple[float, float]:

@@ -3,9 +3,7 @@
 
 from torch import Tensor
 import numpy as np
-from numpy import ndarray
-from sklearn.metrics import roc_auc_score, recall_score, accuracy_score, precision_recall_curve, auc, average_precision_score
-from typing import Optional
+from sklearn.metrics import roc_auc_score, precision_recall_curve, auc, average_precision_score
 
 # -- auroc
 def mean_auroc(

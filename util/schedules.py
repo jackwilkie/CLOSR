@@ -1,17 +1,8 @@
 ''' Learning rate schedule
 '''
 
-from model_training import schedules
 import math
 
-def epochs_to_steps(conf, ipe = None):
-    if ipe is None:
-        return conf
-    
-    for k in schedules.step_counters():
-        if k in conf:
-            conf[k] = conf[k] * ipe    
-    return conf
 
 # -------------------------- Generic Scheduler --------------------------
 class Schedule:

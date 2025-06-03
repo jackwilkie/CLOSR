@@ -4,7 +4,6 @@
 import torch as T
 from torch import Tensor
 from typing import Union, Tuple, Optional, Callable
-
 from .clad_loss import CLADLoss, clad_calc
 from util.distance import batched_cosdist
 

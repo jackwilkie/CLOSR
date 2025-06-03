@@ -4,7 +4,6 @@
 import torch as T
 from torch import Tensor
 import torch.nn as nn
-from functools import partial
 import torch.nn.functional as F
 from typing import Callable, List, Type, Optional
 
