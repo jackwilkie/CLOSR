@@ -25,11 +25,11 @@ def parse_option():
     parser.add_argument('--split_seed', type=int, default=39058032, help='seed for train test split')
     
     # model config
-    parser.add_argument('--d_out', type=int, default=64, help='model output dimensionality')
+    parser.add_argument('--d_out', type=int, default=8, help='model output dimensionality')
     parser.add_argument('--n_classes', type=int, default=12, help='number of classes in dataset')
     parser.add_argument('--neurons', type=str, default='1024,1024,1024,1024', help='neurons in each mlp block')
     parser.add_argument('--dropout', type=float, default=0.0, help='dropout rate')
-    parser.add_argument('--residual', type=bool, default=True, help='Whether to use residual connections in mlp')
+    parser.add_argument('--residual', type=bool, default=False, help='Whether to use residual connections in mlp')
     parser.add_argument('--checkpoint_path', type=str, default='weights/clad.pt.tar', help='path to saved weights')
     parser.add_argument('--device', type=str, default='cuda', help='device')
     parser.add_argument('--chunk_size', type=int, default=1024, help='chunk size for getting features during inference')

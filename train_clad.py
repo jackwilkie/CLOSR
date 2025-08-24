@@ -23,20 +23,20 @@ def parse_option():
     parser.add_argument('--split_seed', type=int, default=39058032, help='seed for train test split')
     
     # model config
-    parser.add_argument('--d_out', type=int, default=64, help='model output dimensionality')
+    parser.add_argument('--d_out', type=int, default=8, help='model output dimensionality')
     parser.add_argument('--n_classes', type=int, default=12, help='number of classes in dataset')
     parser.add_argument('--neurons', type=str, default='1024,1024,1024,1024', help='neurons in each mlp block')
     parser.add_argument('--dropout', type=float, default=0.0, help='dropout rate')
-    parser.add_argument('--residual', type=bool, default=True, help='Whether to use residual connections in mlp')
+    parser.add_argument('--residual', type=bool, default=False, help='Whether to use residual connections in mlp')
     
     # loss config
-    parser.add_argument('--margin', type=float, default=0.3, help='loss function margin value')
+    parser.add_argument('--margin', type=float, default=1.0, help='loss function margin value')
     parser.add_argument('--squared', type=bool, default=True, help='Whether to square distance metric in loss calculation')
     
     # opt config
-    parser.add_argument('--batch_size', type=int, default=1024, help='batch size')
-    parser.add_argument('--weight_decay', type=float, default=0.0, help='weight decay')
-    parser.add_argument('--lr', type=float, default=1e-5, help='learning rate')
+    parser.add_argument('--batch_size', type=int, default=4096, help='batch size')
+    parser.add_argument('--weight_decay', type=float, default= 3e-7, help='weight decay')
+    parser.add_argument('--lr', type=float, default=4.4e-6, help='learning rate')
     parser.add_argument('--epochs', type=int, default=200, help='number of epochs')
     parser.add_argument('--device', type=str, default='cuda', help='device')
     parser.add_argument('--print_freq', type=int, default=100, help='how many batches to print after')

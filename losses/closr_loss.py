@@ -3,51 +3,71 @@
 
 import torch as T
 from torch import Tensor
-from typing import Union, Tuple, Optional, Callable
-from .clad_loss import CLADLoss, clad_calc
-from util.distance import batched_cosdist
+from .clad_loss import CLADLoss
 
-def closr_loss(
-    x: Tensor,
-    y: Tensor,
-    margin: Optional[float] = 1.0,
-    distance_metric: Callable[[Tensor, Optional[Tensor]], Tensor] = batched_cosdist,
-    return_frac_pos: bool = False,
-    squared: bool = True,
-    eps: float = 1e-8,
-) -> Union[Tensor, Tuple[Tensor, Tensor]]:
+import torch as T
+from torch import Tensor
+import torch.nn.functional as F
 
-    if x.ndim != 3:
-        raise ValueError(f'Three dimensional input tensor expected, got: {x.size()}')
-        
-    # compute distance matrix
-    dists = distance_metric(x) # C x B x B distance matrix
-    
+# -- loss function
+def loss_calc(
+    dists: Tensor, # B x B distance matrix
+    y: Tensor, # class labels
+    target_class: int,  # target class
+    margin,
+    eps = 1e-6,
+    squared = True,
+    alpha = 0.5,
+    return_frac_pos = False
+) -> Tensor:
+    """ functional classwise DDOS loss calculation
+    """
+    B = dists.size(0)
+
+    #get pair masks
+    eq_pairs =  T.eq(T.unsqueeze(y, 0), T.unsqueeze(y, 1)) # get similar pair mask
+    sim_mask = T.logical_and(eq_pairs, T.unsqueeze(y, 0) == target_class)  # mask for similar benign pairs
+    dissim_mask = T.logical_and(~eq_pairs, T.unsqueeze(y, 1) == target_class)  # mask for dissimilar pairs where first sample is zero
+
+    # get dists for similar pairs
+    sim_dists = dists * sim_mask 
+
+    # get dists fo dissimilar pairs
+    if margin is not None:
+        margin_tensor = T.full(dists.shape, margin, device = dists.device, dtype = dists.dtype)
+        margin = margin
+    else:
+        margin_tensor = T.zeros(dists.shape, device = dists.device, dtype = dists.dtype)
+        margin = 0
+                
+    dissim_dists = T.where(dissim_mask, dists, margin_tensor)
+
+    # calculate loss
+    n_sim = T.sum(T.greater(sim_dists, eps).float()) # number of similar pairs
+
     if squared:
-        dists = T.pow(dists, 2)
+        sim_dists = T.pow(sim_dists,2)
+
+    sim_loss = T.sum(sim_dists)/(n_sim + eps) # mean loss for similar pairs
+
+    dissim_loss = F.relu(margin - dissim_dists)
+
+    if squared:
+        dissim_loss = T.pow(dissim_loss,2)
+        
+    n_dissim = T.sum(T.greater(dissim_loss, eps).float())
+    dissim_loss = T.sum(dissim_loss)/(n_dissim + eps)
+
+    fraction_positive_pairs= n_dissim/ (T.sum(dissim_mask) + eps)
+    loss = ((alpha) * sim_loss) + ((1-alpha) * dissim_loss)
     
-    loss_tuples = [
-        clad_calc(
-            dists = dists[c],
-            target_class = c,
-            y = y,
-            margin = margin,
-            return_frac_pos = True,
-            eps = eps,
-    )
-    for c in range(x.size(1))] # calculate loss for each head
-    
-    # Unzip the tuples into two separate lists
-    loss_elements, frac_pos_elements = zip(*loss_tuples)
-    loss = T.sum(T.stack(loss_elements))/x.size(1)
-    frac_pos = T.mean(T.stack(frac_pos_elements))
-    
+    #loss = loss / B
     if return_frac_pos:
-        return loss, frac_pos
+        return loss, fraction_positive_pairs
     else:
         return loss
 
-    
+
 class CLOSRLoss(CLADLoss):
     def __init__(
         self, 
@@ -64,17 +84,20 @@ class CLOSRLoss(CLADLoss):
         y: Tensor,
     ) -> Tensor:
         
-        if x.ndim != 3 and x.size(1) != self.n_classes:
-            raise ValueError(f'Input invalid size. Got: {x.size()}, expected: B x {self.n_classes} x d')
+        B, C, D = x.size() # input is batch x n_classes x d
         
-        loss, frac_pos = closr_loss(
-            x = x,
-            y =y,
-            margin = self.m,
-            return_frac_pos = True,
-            squared = self.squared,
-            eps = self.eps,
+        # normalise vevctors
+        x =  F.normalize(x, p=2, dim=-1)
+        
+        # calculate distance matrix
+        x_t = x.transpose(0, 1)  # C x B x D
+        distance_matrix = T.bmm(x_t, x_t.transpose(1, 2))  # C x B x B
+        distance_matrix = (1 - distance_matrix)/2
+        
+        self.fraction_positive_pairs = T.tensor(0.0)
+        loss = T.mean(
+            T.stack([
+                loss_calc(dists = distance_matrix[c], y = y, target_class=c, margin = self.m)    
+            for c in range(C)])
         )
-        
-        self.fraction_positive_pairs = frac_pos
         return loss

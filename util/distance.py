@@ -7,6 +7,24 @@ import torch.nn.functional as F
 from typing import Optional
 import numpy as np
 
+# -- cossim function
+def cossim(a, b = None):
+    a_norm = F.normalize(a, p=2, dim=-1)
+    
+    if b is not None:
+        b_norm = F.normalize(b, p=2, dim=-1)
+    else:
+        b_norm = a_norm.clone()
+        
+    # Compute cosine similarity
+    # Using torch.mm for matrix multiplication because A_norm and B_norm.T are normalized
+    similarity = T.mm(a_norm, b_norm.T)
+    
+    # Since cosine distance = 1 - cosine similarity
+    cosine_distance = (1 - similarity)/2 # divide by 2 gives range [0, 1]
+    
+    return cosine_distance
+
 # -- cosine distance function
 def cosdist(a, b = None):
     a_norm = F.normalize(a, p=2, dim=-1)
