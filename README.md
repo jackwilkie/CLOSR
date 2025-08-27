@@ -51,7 +51,7 @@ loss = criterion(x = features, y =labels)
 ```
 
 ## Comparison
-CLAD significantly outperforms both closed-set classifiers on known attack detection (top) and anomaly detectors on zero-day attack detection (bottom):
+CLAD significantly outperforms both closed-set classifiers on known attack detection (top) and anomaly detectors on zero-day attack detection (bottom). AUROC is reported below:
 
 | Class                    | CLAD     | DUAD     | DAE-LR   | Deep SVDD | AE       | SVM      | AutoSVM  | IF       | RENOIR   | MLP      | Siamese  |
 |--------------------------|----------|----------|----------|-----------|----------|----------|----------|----------|----------|----------|----------|
