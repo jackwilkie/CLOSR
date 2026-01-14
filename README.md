@@ -150,9 +150,14 @@ The performance metrics of each model will be printed to the terminal after eval
 
 ## Reference
 ```
-@Article{wilkie2025clad,
-    title   = {A Novel Contrastive Loss for Zero-Day Network Intrusion Detection},
-    author  = {Jack Wilkie and Hanan Hindy and Craig Michie and Christos Tachtatzis and James Irvine and Robert Atkinson},
-    year    = {2025},
-}
+@ARTICLE{11340750,
+  author={Wilkie, Jack and Hindy, Hanan and Michie, Craig and Tachtatzis, Christos and Irvine, James and Atkinson, Robert},
+  journal={IEEE Transactions on Network and Service Management}, 
+  title={A Novel Contrastive Loss for Zero-Day Network Intrusion Detection}, 
+  year={2026},
+  volume={},
+  number={},
+  pages={1-1},
+  keywords={Contrastive learning;Anomaly detection;Training;Autoencoders;Training data;Detectors;Data models;Vectors;Telecommunication traffic;Network intrusion detection;Internet of Things;Network Intrusion Detection;Machine Learning;Contrastive Learning},
+  doi={10.1109/TNSM.2026.3652529}}
 ```
