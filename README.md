@@ -3,7 +3,7 @@
   <img src="images/architecture.png" width="700">
 </p>
 
-Official Github repo for the paper "A Novel Contrastive Loss for Zero-Day Network Intrusion Detection". This repository covers a reference implementation for both the Contrastive Learning for Anomaly Detection (CLAD) and Contrastive Learning for Open Set Recognition (CLOSR) methods decribed in [this work](www.google.com).
+Official Github repo for the paper "A Novel Contrastive Loss for Zero-Day Network Intrusion Detection". This repository covers a reference implementation for both the Contrastive Learning for Anomaly Detection (CLAD) and Contrastive Learning for Open Set Recognition (CLOSR) methods decribed in [this work](https://doi.org/10.1109/TNSM.2026.3652529).
 
 ## CLAD
 
