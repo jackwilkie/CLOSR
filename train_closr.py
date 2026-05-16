@@ -129,6 +129,7 @@ def train(
     model, 
     criterion, 
     optimizer, 
+    schedule,
     epoch, 
     opt,
 ):
@@ -162,6 +163,7 @@ def train(
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        schedule.step()
         
         # measure elapsed time
         batch_time.update(time.time() - end)
@@ -197,10 +199,9 @@ def main():
     for epoch in range(1, opt.epochs + 1):
         # train for one epoch
         time1 = time.time()
-        loss = train(train_loader, model, criterion, optimiser, epoch, opt)
+        loss = train(train_loader, model, criterion, optimiser, schedule, epoch, opt)
         time2 = time.time()
         print('epoch {}, total time {:.2f}'.format(epoch, time2 - time1))
-        schedule.step()
         
     # save the trained model
     make_checkpoint(
