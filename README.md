@@ -37,7 +37,7 @@ The CLOSR loss function models each class as a vMF distribution a distinct embed
 from losses.closr_loss import CLOSRLoss
 
 # define CLOSR loss with a margin `m` and 'n_classes' classes
-criterion = CLADLoss(m = m, n_classes = n_classes)
+criterion = CLOSRLoss(m = m, n_classes = n_classes)
 
 # features: [bsz, n_classes, f_dim]
 # features should L2 normalized in f_dim dimension
