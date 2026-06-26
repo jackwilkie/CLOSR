@@ -1,5 +1,4 @@
-''' Functions for distance calculations
-'''
+"""Functions for distance calculations"""
 
 import torch as T
 from torch import Tensor
@@ -7,46 +6,49 @@ import torch.nn.functional as F
 from typing import Optional
 import numpy as np
 
+
 # -- cossim function
-def cossim(a, b = None):
+def cossim(a, b=None):
     a_norm = F.normalize(a, p=2, dim=-1)
-    
+
     if b is not None:
         b_norm = F.normalize(b, p=2, dim=-1)
     else:
         b_norm = a_norm.clone()
-        
+
     # Compute cosine similarity
     # Using torch.mm for matrix multiplication because A_norm and B_norm.T are normalized
     similarity = T.mm(a_norm, b_norm.T)
-    
+
     # Since cosine distance = 1 - cosine similarity
-    cosine_distance = (1 - similarity)/2 # divide by 2 gives range [0, 1]
-    
+    cosine_distance = (1 - similarity) / 2  # divide by 2 gives range [0, 1]
+
     return cosine_distance
 
+
 # -- cosine distance function
-def cosdist(a, b = None):
+def cosdist(a, b=None):
     a_norm = F.normalize(a, p=2, dim=-1)
-    
+
     if b is not None:
         b_norm = F.normalize(b, p=2, dim=-1)
     else:
         b_norm = a_norm.clone()
-        
+
     # Compute cosine similarity
     similarity = T.mm(a_norm, b_norm.T)
-    
+
     # Since cosine distance = 1 - cosine similarity
-    cosine_distance = (1 - similarity)/2 # divide by 2 gives range [0, 1]
-    
+    cosine_distance = (1 - similarity) / 2  # divide by 2 gives range [0, 1]
+
     return cosine_distance
+
 
 # -- cosine distnace for 3d tensors
 def batched_cosdist(x: Tensor) -> Tensor:
     # x: [B, C, D] → [C, B, D]
     x = x.permute(1, 0, 2)
-    
+
     # Normalize along D
     x_norm = F.normalize(x, p=2, dim=-1)  # [C, B, D]
 
@@ -59,17 +61,26 @@ def batched_cosdist(x: Tensor) -> Tensor:
 
     return dist  # [C, B, B]
 
+
 # -- cosine distance computed in chunks
 def chunked_centroid_sims(
     embeddings,
     centroid,
     chunk_size: Optional[int] = 1024,
-):        
+):
     if chunk_size is None:
-        centroid_sims = (F.cosine_similarity(centroid.unsqueeze(0), embeddings, dim = 1)).squeeze().cpu().detach().numpy()
+        centroid_sims = (
+            (F.cosine_similarity(centroid.unsqueeze(0), embeddings, dim=1))
+            .squeeze()
+            .cpu()
+            .detach()
+            .numpy()
+        )
     else:
         # Assume centroid and embeddings are already defined
-        num_chunks = (embeddings.size(0) + chunk_size - 1) // chunk_size  # Calculate the number of chunks
+        num_chunks = (
+            embeddings.size(0) + chunk_size - 1
+        ) // chunk_size  # Calculate the number of chunks
         centroid_sims = []
 
         for i in range(num_chunks):
@@ -77,10 +88,12 @@ def chunked_centroid_sims(
             start_idx = i * chunk_size
             end_idx = min((i + 1) * chunk_size, embeddings.size(0))
             val_chunk = embeddings[start_idx:end_idx]
-            
+
             # Calculate cosine similarity for the current chunk
-            chunk_sims = (F.cosine_similarity(centroid.unsqueeze(0), val_chunk, dim=1)).squeeze()
-                
+            chunk_sims = (
+                F.cosine_similarity(centroid.unsqueeze(0), val_chunk, dim=1)
+            ).squeeze()
+
             # Detach and move to CPU, then convert to numpy
             centroid_sims.append(chunk_sims.cpu().detach().numpy())
 
@@ -89,10 +102,13 @@ def chunked_centroid_sims(
 
     return centroid_sims
 
+
 # -- closr distance measurements
-def get_class_centroid(train_embeddings: Tensor, train_labels: Tensor, target_class: int) -> Tensor:
-    """ Calculate C x D tensor, where C is the number of classes and d is the output dimensionality of the model
-        Each C is the centroid of 
+def get_class_centroid(
+    train_embeddings: Tensor, train_labels: Tensor, target_class: int
+) -> Tensor:
+    """Calculate C x D tensor, where C is the number of classes and d is the output dimensionality of the model
+        Each C is the centroid of
 
     Args:
         train_embeddings (Tensor): Embedded representations of the training data
@@ -102,9 +118,10 @@ def get_class_centroid(train_embeddings: Tensor, train_labels: Tensor, target_cl
     Returns:
         Tensor: _description_
     """
-    ref_points = train_embeddings[:,target_class,:]
+    ref_points = train_embeddings[:, target_class, :]
     ref_points = ref_points[train_labels == target_class]
-    return T.mean(F.normalize(ref_points,dim=-1), dim = 0)
+    return T.mean(F.normalize(ref_points, dim=-1), dim=0)
+
 
 def get_centroids(train_embeddings: Tensor, train_labels: Tensor) -> Tensor:
     """Calculate C x D tensor, where C is the number of classes and d is the output dimensionality of the model
@@ -117,22 +134,28 @@ def get_centroids(train_embeddings: Tensor, train_labels: Tensor) -> Tensor:
     Returns:
         Tensor: C x D, Class centroids
     """
-    
+
     # infer number of classes from train_embeddings dimension
     n_classes = train_embeddings.size(1)
-    
+
     # calculate centroid for each class
-    centroids = T.stack([
-        get_class_centroid(
-            train_embeddings = train_embeddings, 
-            train_labels = train_labels,
-            target_class = c,
-        )
-    for c in range(n_classes)])
-    
+    centroids = T.stack(
+        [
+            get_class_centroid(
+                train_embeddings=train_embeddings,
+                train_labels=train_labels,
+                target_class=c,
+            )
+            for c in range(n_classes)
+        ]
+    )
+
     return centroids
 
-def calc_class_sims_chunked(centroids: Tensor, embeddings: Tensor, chunk_size: int = 1024) -> Tensor:
+
+def calc_class_sims_chunked(
+    centroids: Tensor, embeddings: Tensor, chunk_size: int = 1024
+) -> Tensor:
     B = embeddings.size(0)
     sims_chunks = []
 
